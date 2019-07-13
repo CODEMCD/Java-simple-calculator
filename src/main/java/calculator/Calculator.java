@@ -2,40 +2,20 @@ package calculator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.DoubleBinaryOperator;
 
 public class Calculator {
 
-    private static Map<String, CalculateStrategy> bucket = new HashMap<>();
+    private static Map<String, DoubleBinaryOperator> bucket = new HashMap<>();
 
     static {
-        bucket.put("+", new CalculateStrategy() {
-            @Override
-            public double calculate(double right, double left) {
-                return right + left;
-            }
-        });
-        bucket.put("-", new CalculateStrategy() {
-            @Override
-            public double calculate(double right, double left) {
-                return right - left;
-            }
-        });
-        bucket.put("*", new CalculateStrategy(){
-            @Override
-            public double calculate(double right, double left) {
-                return right * left;
-            }
-        });
-        bucket.put("/", new CalculateStrategy() {
-            @Override
-            public double calculate(double right, double left) {
-                return right / left;
-            }
-        });
+        bucket.put("+", Double::sum);
+        bucket.put("-", (a, b) -> a - b);
+        bucket.put("*", (a, b) -> a * b);
+        bucket.put("/", (a, b) -> a / b);
     }
 
     public static double run(double rightOperator, double leftOperator, String operand) {
-        CalculateStrategy calculateStrategy = bucket.get(operand);
-        return calculateStrategy.calculate(rightOperator, leftOperator);
+        return bucket.get(operand).applyAsDouble(rightOperator, leftOperator);
     }
 }
